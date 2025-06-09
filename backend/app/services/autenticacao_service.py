@@ -1,5 +1,5 @@
 from ..models.usuario import Usuario
-from ..app.extensions import db
+from ..extensions import db
 from flask_jwt_extended import create_access_token
 
 class AutenticacaoService: 
