@@ -23,6 +23,9 @@ def criar_aplicacao(config_class=Config):
             print(f"Erro ao conectar ao banco de dados: {e}")
 
     from .routes.autenticacao_routes import bp as autenticacao_bp
+    from .routes.medico_routes import bp as medico_bp
+
     app.register_blueprint(autenticacao_bp)
+    app.register_blueprint(medico_bp)
 
     return app
