@@ -39,5 +39,13 @@ class AutenticacaoService:
                 identity=usuario.id,
                 additional_claims={'tipo': usuario.tipo, 'nome': usuario.nome}
             )
-            return {'token': token, 'usuario': usuario}, None
-        return None, {'erro': 'Credenciais invalidas'}
+            return {
+            'token': token,
+            'usuario': {
+                'id': usuario.id,
+                'nome': usuario.nome,
+                'email': usuario.email,
+                'tipo': usuario.tipo
+            }
+        }, None
+        return None, {'erro': 'Credenciais inválidas'}

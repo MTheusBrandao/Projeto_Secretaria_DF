@@ -1,16 +1,28 @@
 from flask import Flask
 from .config import Config
-from .extensions import db, jwt
+from .extensions import db, jwt, migrate
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def criar_aplicacao(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     # inicializar as extensoes:
-    db.init.app(app)
+    db.init_app(app)
     jwt.init_app(app)
+    migrate.init_app(app, db)
 
-    from .routes.autenticacao_service import bp as autenticacao_bp
+    # Testar conexão com o banco de dados
+    with app.app_context():
+        try:
+            db.session.execute("SELECT 1")
+            print("Conexão com o banco de dados bem-sucedida!")
+        except Exception as e:
+            print(f"Erro ao conectar ao banco de dados: {e}")
+
+    from .routes.autenticacao_routes import bp as autenticacao_bp
     app.register_blueprint(autenticacao_bp)
 
     return app
