@@ -13,19 +13,6 @@ class Agendamento(db.Model):
     observacoes = db.Column(db.Text, nullable=True)
     criado_em = db.Column(db.DateTime, default=datetime.now)
 
-    paciente = db.relationship('Usuario', backref='agendamentos')
-    medico = db.relationship('Medico', backref='agendamentos')
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'data_hora': self.data_hora.isoformat(),
-            'duracao': self.duracao,
-            'status': self.status,
-            'medico': self.medico.to_dict(),
-            'paciente': {
-                'id':self.paciente.id,
-                'nome': self.paciente.nome
-            },
-            'observacoes': self.observacoes
-        }
+    # LGPD
+    consentimento = db.Column(db.Boolean, default=False)
+    finalidade_dados = db.Column(db.String(200), default='Agendamento de consulta médica')

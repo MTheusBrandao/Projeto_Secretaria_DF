@@ -13,8 +13,11 @@ class Usuario(db.Model):
     telefone = db.Column(db.String(15), nullable=True)
     endereco = db.Column(db.Text, nullable=True)
     tipo = db.Column(db.String(20), nullable=False, default='paciente')
-    criado_em = db.Column(db.DateTime, default=datetime.now())
+    criado_em = db.Column(db.DateTime, default=datetime.now)
     ativo = db.Column(db.Boolean, default=True)
+
+    agendamentos = db.relationship('Agendamento', back_populates='paciente', lazy='dynamic')
+
 
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(
@@ -26,5 +29,10 @@ class Usuario(db.Model):
     def check_senha(self, senha):
         return check_password_hash(self.senha_hash, senha)
     
-    def __repr__(self):
-        return f'<Usuario {self.email}>'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nome': self.nome,
+            'email': self.email,
+            'tipo': self.tipo,
+        }

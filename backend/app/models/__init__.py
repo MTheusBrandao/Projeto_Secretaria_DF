@@ -1,8 +1,9 @@
 from .usuario import Usuario
-from .especialidades import Especialidade
-from .medicos import Medico
+from .especialidade import Especialidade
+from .medico import Medico
 from .agendamento import Agendamento
-from .horario_medico import HorarioMedico
+from .agenda_medico import AgendaMedico
+from .regiao_administrativa import RegiaoAdministrativa
 
 __all__ = [
     'Usuario',
@@ -10,5 +11,6 @@ __all__ = [
     'Medico',
     'Agendamento',
     'HorarioMedico',
+    'RegiaoAdministrativa'
     ]
 

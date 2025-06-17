@@ -1,5 +1,5 @@
-from ..models.medicos import Medico
-from ..models.especialidades import Especialidade
+from ..models.medico import Medico
+from ..models.especialidade import Especialidade
 from ..extensions import db
 
 class MedicoService:
