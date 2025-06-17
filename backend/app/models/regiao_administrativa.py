@@ -11,3 +11,6 @@ class RegiaoAdministrativa(db.Model):
     ativo = db.Column(db.Boolean, default=True)
 
     medicos = db.relationship('Medico', back_populates='regiao_administrativa', lazy=True)
+
+    def __repr__(self):
+        return f'<Regiao Administrativa {self.nome}>'

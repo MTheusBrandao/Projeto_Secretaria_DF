@@ -11,3 +11,6 @@ class AgendaMedico(db.Model):
     hora_fim = db.Column(db.Time, nullable=False)
     duracao_consulta = db.Column(db.Integer, default=30)
     ativo = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f'<AgendaMedico {self.medico_id} - Day {self.dia_semana}>'

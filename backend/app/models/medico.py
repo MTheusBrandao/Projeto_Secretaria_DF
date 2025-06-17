@@ -1,4 +1,3 @@
-from datetime import datetime
 from ..extensions import db
 
 class Medico(db.Model):
@@ -11,5 +10,8 @@ class Medico(db.Model):
     regiao_administrativa_id = db.Column(db.Integer, db.ForeignKey('regioes_administrativas.id'), nullable=False)
     ativo = db.Column(db.Boolean, default=True)
     
-    consultas = db.relationship('Agendamento', back_populates='medico', lazy=True)
+    agendamento = db.relationship('Agendamento', back_populates='medico', lazy=True)
     agendas = db.relationship('AgendaMedico', back_populates='medico', lazy=True)
+
+    def __repr__(self):
+        return f'<Medico {self.nome}>'

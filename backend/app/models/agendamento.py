@@ -11,8 +11,11 @@ class Agendamento(db.Model):
     duracao = db.Column(db.Integer, default=30)  # em minutos
     status = db.Column(db.String(20), default='agendado')  # agendado, cancelado, realizado
     observacoes = db.Column(db.Text, nullable=True)
-    criado_em = db.Column(db.DateTime, default=datetime.now)
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
     # LGPD
     consentimento = db.Column(db.Boolean, default=False)
     finalidade_dados = db.Column(db.String(200), default='Agendamento de consulta médica')
+
+    def __repr__(self):
+        return f'<Appointment {self.id} - {self.data_hora}>'

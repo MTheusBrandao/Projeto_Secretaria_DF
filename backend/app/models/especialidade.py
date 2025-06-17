@@ -10,3 +10,6 @@ class Especialidade(db.Model):
     ativo = db.Column(db.Boolean, default=True)
 
     medicos = db.relationship('Medico', back_populates='especialidade')
+
+    def __repr__(self):
+        return f'<Especialidade {self.nome}>'
