@@ -10,7 +10,7 @@ def validar_cpf(cpf):
     
     for i in range(9, 11):
         valor = sum((int(cpf[num]) * ((i+1) - num) for num in range(0, i)))
-        digito = ((value * 10) % 11) % 10
+        digito = ((valor * 10) % 11) % 10
         if digito != int(cpf[i]):
             return False
     
