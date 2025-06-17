@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
-from ..models import Agendamento, Medico, Usuario
+from datetime import datetime
+from ..models import Agendamento
 from ..extensions import db
 from ..services.horario_service import HorarioService
 
@@ -25,7 +25,7 @@ class AgendamentoService:
         db.session.add(agendamento)
         db.session.commit()
 
-        return agendamento, None
+        return agendamento, None, 201
     
     @staticmethod
     def listar_agendamentos(medico_id=None, paciente_id=None):
@@ -54,4 +54,4 @@ class AgendamentoService:
         agendamento.status = 'cancelado'
         db.session.commit()
         
-        return agendamento, None
+        return agendamento, None, 200

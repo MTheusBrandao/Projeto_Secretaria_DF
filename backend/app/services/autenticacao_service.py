@@ -47,5 +47,5 @@ class AutenticacaoService:
                 'email': usuario.email,
                 'tipo': usuario.tipo
             }
-        }, None
-        return None, {'erro': 'Credenciais inválidas'}
+        }, None, 200
+        return None, {'erro': 'Credenciais inválidas'}, 401

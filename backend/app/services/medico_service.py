@@ -1,5 +1,4 @@
 from ..models.medico import Medico
-from ..models.especialidade import Especialidade
 from ..extensions import db
 
 class MedicoService:
@@ -10,7 +9,7 @@ class MedicoService:
         if especialidade_id:
             query = query.filter_by(especialidade_id=especialidade_id)
 
-        return query.all()
+        return query.all(), None, 200
     
     @staticmethod
     def cadastrar_medico(dados):

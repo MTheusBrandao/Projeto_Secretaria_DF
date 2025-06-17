@@ -10,7 +10,7 @@ __all__ = [
     'Especialidade',
     'Medico',
     'Agendamento',
-    'HorarioMedico',
+    'AgendaMedico',
     'RegiaoAdministrativa'
     ]
 

@@ -1,5 +1,5 @@
 from datetime import time, timedelta, datetime
-from ..models import HorarioMedico, Medico, Agendamento
+from ..models import AgendaMedico, Medico, Agendamento
 from ..extensions import db
 
 class HorarioService:
@@ -14,7 +14,7 @@ class HorarioService:
         except ValueError:
             return None, {'erro': 'Formato de hora invalido'}, 404
 
-        horario = HorarioMedico(
+        horario = AgendaMedico(
             medico_id=medico_id,
             dia_semana=dia_semana,
             hora_inicio=hora_inicio,
@@ -28,52 +28,42 @@ class HorarioService:
     
     @staticmethod
     def listar_horarios(medico_id, apenas_ativos=True):
-        query = HorarioMedico.query.filter_by(medico_id=medico_id)
+        query = AgendaMedico.query.filter_by(medico_id=medico_id)
 
         if apenas_ativos:
             query = query.filter_by(ativo=True)
 
-        return query.order_by(HorarioMedico.dia_semana, HorarioMedico.hora_inicio).all()
+        return query.order_by(AgendaMedico.dia_semana, AgendaMedico.hora_inicio).all()
     
     @staticmethod
     def verificar_disponibilidade(medico_id, data, duracao_minutos=30):
-        """
-        Verifica se um médico está disponível em um determinado horário
-        
-        Args:
-            medico_id: ID do médico
-            data_hora: DateTime do agendamento pretendido
-            duracao_minutos: Duração em minutos (padrão 30)
-            
-        Returns:
-            tuple: (disponivel, mensagem) ou (None, erro)
-        """
+       
         try:
             if isinstance(data_hora, str):
                 data_hora = datetime.fromisoformat(data_hora)
                 
-            # 1. Verificar se há horário cadastrado para esse dia
             dia_semana = data_hora.weekday()
             hora_consulta = data_hora.time()
             fim_consulta = (data_hora + timedelta(minutes=duracao_minutos)).time()
             
-            horario = HorarioMedico.query.filter(
-                HorarioMedico.medico_id == medico_id,
-                HorarioMedico.dia_semana == dia_semana,
-                HorarioMedico.hora_inicio <= hora_consulta,
-                HorarioMedico.hora_fim >= fim_consulta,
-                HorarioMedico.ativo == True
+            horario = AgendaMedico.query.filter_by(
+                medico_id=medico_id,
+                dia_semana=dia_semana,
+                ativo=True
+            ).filter(
+                AgendaMedico.hora_inicio <= hora,
+                AgendaMedico.hora_fim >= fim
             ).first()
             
             if not horario:
                 return False, "Médico não atende neste horário"
                 
-            # 2. Verificar conflito com agendamentos existentes
-            conflito = Agendamento.query.filter(
-                Agendamento.medico_id == medico_id,
-                Agendamento.data_hora < data_hora + timedelta(minutes=duracao_minutos),
-                Agendamento.data_hora + timedelta(minutes=Agendamento.duracao) > data_hora,
-                Agendamento.status == 'agendado'
+            conflito = Agendamento.query.filter_by(
+                medico_id=medico_id,
+                status='agendado'
+            ).filter(
+                Agendamento.data_hora < data_hora + timedelta(minutes=duracao),
+                Agendamento.data_hora + timedelta(minutes=Agendamento.duracao) > data_hora
             ).first()
             
             if conflito:
@@ -90,16 +80,7 @@ class HorarioService:
 
     @staticmethod
     def listar_horarios_disponiveis(medico_id, data):
-        """
-        Lista todos os horários disponíveis de um médico em uma data específica
         
-        Args:
-            medico_id: ID do médico
-            data: Data no formato 'YYYY-MM-DD' ou objeto date
-            
-        Returns:
-            list: Lista de horários disponíveis
-        """
         try:
             if isinstance(data, str):
                 data = datetime.strptime(data, '%Y-%m-%d').date()
@@ -107,59 +88,41 @@ class HorarioService:
             dia_semana = data.weekday()
             data_atual = datetime.now().date()
             
-            # Obter horário de trabalho do médico
-            horarios_trabalho = HorarioMedico.query.filter(
-                HorarioMedico.medico_id == medico_id,
-                HorarioMedico.dia_semana == dia_semana,
-                HorarioMedico.ativo == True
-            ).order_by(HorarioMedico.hora_inicio).all()
+            horarios = AgendaMedico.query.filter_by(
+                medico_id=medico_id,
+                dia_semana=dia_semana,
+                ativo=True
+            ).order_by(AgendaMedico.horario_inicio).all()
             
-            if not horarios_trabalho:
+            if not horarios:
                 return []
                 
-            # Obter agendamentos do dia
-            inicio_dia = datetime.combine(data, time.min)
-            fim_dia = datetime.combine(data, time.max)
-            
-            agendamentos = Agendamento.query.filter(
-                Agendamento.medico_id == medico_id,
-                Agendamento.data_hora.between(inicio_dia, fim_dia),
-                Agendamento.status == 'agendado'
-            ).order_by(Agendamento.data_hora).all()
-            
+            inicio = datetime.combine(data, time.min)
+            fim = datetime.combine(data, time.max)
+
+            agendados = Agendamento.query.filter_by(
+                medico_id=medico_id,
+                status='agendado'
+            ).filter(Agendamento.data_hora.between(inicio, fim)).all()
+
             disponiveis = []
-            
-            for horario in horarios_trabalho:
-                slot_inicio = datetime.combine(data, horario.hora_inicio)
-                slot_fim = datetime.combine(data, horario.hora_fim)
-                
-                # Se for no passado, pular
-                if data == data_atual and slot_inicio.time() < datetime.now().time():
-                    continue
-                    
-                # Gerar slots de 30 minutos
-                current_slot = slot_inicio
-                while current_slot + timedelta(minutes=30) <= slot_fim:
-                    fim_slot = current_slot + timedelta(minutes=30)
-                    
-                    # Verificar conflito com agendamentos
-                    conflito = False
-                    for agendamento in agendamentos:
-                        agendamento_fim = agendamento.data_hora + timedelta(minutes=agendamento.duracao)
-                        if not (fim_slot <= agendamento.data_hora or current_slot >= agendamento_fim):
-                            conflito = True
-                            break
-                            
-                    if not conflito:
+            for horario in horarios:
+                atual = datetime.combine(data, horario.horario_inicio)
+                limite = datetime.combine(data, horario.horario_fim)
+
+                while atual + timedelta(minutes=30) <= limite:
+                    conflito = any(
+                        not (atual + timedelta(minutes=30) <= a.data_hora or atual >= a.data_hora + timedelta(minutes=a.duracao))
+                        for a in agendados
+                    )
+                    if not conflito and (data > hoje or atual.time() > datetime.now().time()):
                         disponiveis.append({
-                            'inicio': current_slot.isoformat(),
-                            'fim': fim_slot.isoformat()
+                            'inicio': atual.isoformat(),
+                            'fim': (atual + timedelta(minutes=30)).isoformat()
                         })
-                        
-                    current_slot += timedelta(minutes=30)
-                    
+                    atual += timedelta(minutes=30)
+
             return disponiveis
-            
         except Exception as e:
-            print(f"Erro ao listar horários: {str(e)}")
+            print(f"Erro ao listar horários: {e}")
             return []
