@@ -36,7 +36,7 @@ class HorarioService:
         return query.order_by(AgendaMedico.dia_semana, AgendaMedico.hora_inicio).all()
     
     @staticmethod
-    def verificar_disponibilidade(medico_id, data, duracao_minutos=30):
+    def verificar_disponibilidade(medico_id, data_hora, duracao_minutos=30):
        
         try:
             if isinstance(data_hora, str):
@@ -108,8 +108,8 @@ class HorarioService:
             disponiveis = []
             hoje = datetime.now().date()
             for horario in horarios:
-                atual = datetime.combine(data, horario.horario_inicio)
-                limite = datetime.combine(data, horario.horario_fim)
+                atual = datetime.combine(data, horario.hora_inicio)
+                limite = datetime.combine(data, horario.hora_fim)
 
                 while atual + timedelta(minutes=30) <= limite:
                     conflito = any(

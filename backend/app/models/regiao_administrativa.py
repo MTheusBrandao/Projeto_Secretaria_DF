@@ -10,4 +10,4 @@ class RegiaoAdministrativa(db.Model):
     telefone = db.Column(db.String(15), nullable=True)
     ativo = db.Column(db.Boolean, default=True)
 
-    medicos = db.relationship('Medico', backref='regiao_administrativa', lazy=True)
+    medicos = db.relationship('Medico', back_populates='regiao_administrativa', lazy=True)

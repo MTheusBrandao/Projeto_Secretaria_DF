@@ -4,7 +4,7 @@ from ..extensions import db
 class MedicoService:
     @staticmethod
     def listar_medicos(especialidade_id=None, ativo=True):
-        query = Medico.query.filter_by(aitvo=ativo)
+        query = Medico.query.filter_by(ativo=ativo)
 
         if especialidade_id:
             query = query.filter_by(especialidade_id=especialidade_id)
@@ -16,7 +16,7 @@ class MedicoService:
         medico=Medico(
             nome=dados['nome'],
             crm=dados['crm'],
-            especialidade_id=dados.get['especialidade_id']
+            especialidade_id=dados.get('especialidade_id')
         )
 
         db.session.add(medico)

@@ -18,13 +18,13 @@ def criar():
     
     agendamento, erro = AgendamentoService.criar_agendamento(
         paciente_id=usuario_id,
-        medico_id=dados['medico_id='],
+        medico_id=dados['medico_id'],
         data_hora=data_hora,
         observacoes=dados.get('observacoes')
     )
 
     if erro:
-        return jsonify(erro), erro.get('status_code'), 400
+        return jsonify(erro), erro.get('status_code', 400)
     
     return jsonify(agendamento.to_dict()), 201
     
@@ -32,7 +32,7 @@ def criar():
 @jwt_required()
 def listar():
     usuario_id = get_jwt_identity()
-    medico_id = request.args.get('medicoo_id')
+    medico_id = request.args.get('medico_id')
 
     agendamentos = AgendamentoService.listar_agendamentos(
         medico_id=medico_id,

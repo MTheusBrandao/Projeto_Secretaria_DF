@@ -5,7 +5,7 @@ bp = Blueprint('medicos', __name__, url_prefix='/api/medicos')
 
 @bp.route('/', methods=['GET'])
 def listar():
-    especialidade_id = request.args.get('especialidade_id')
+    especialidade_id = request.args.get('medico_id')
     medicos = MedicoService.listar_medicos(especialidade_id=especialidade_id)
     return jsonify([medico.to_dict() for medico in medicos]), 200
 
@@ -19,11 +19,12 @@ def cadastrar():
     
     return jsonify(medico.to_dict()), 201
 
-@bp.route('/<int:medico_id>', methods=['PUT'])
+@bp.route('/<int:medico_id>', methods=['GET'])
 def obter(medico_id):
     medico = MedicoService.obter_medico(medico_id)
     if not medico:
         return jsonify({'erro': 'Médico não encontrado'}), 404
+    return jsonify(medico.to_dict()), 200
 
 @bp.route('/<int:medico_id>', methods=['PUT'])
 def atualizar(medico_id):

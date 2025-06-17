@@ -8,8 +8,8 @@ class Medico(db.Model):
     nome = db.Column(db.String(100), nullable=False)
     crm = db.Column(db.String(20), unique=True, nullable=False)
     especialidade_id = db.Column(db.Integer, db.ForeignKey('especialidades.id'), nullable=False)
-    regiao_administrativa_id = db.Column(db.Integer, db.ForeignKey('admins_regionais.id'), nullable=False)
+    regiao_administrativa_id = db.Column(db.Integer, db.ForeignKey('regioes_administrativas.id'), nullable=False)
     ativo = db.Column(db.Boolean, default=True)
     
-    consultas = db.relationship('Consulta', backref='medico', lazy=True)
-    agendas = db.relationship('AgendaMedico', backref='medico', lazy=True)
+    consultas = db.relationship('Agendamento', back_populates='medico', lazy=True)
+    agendas = db.relationship('AgendaMedico', back_populates='medico', lazy=True)
