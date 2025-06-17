@@ -51,8 +51,8 @@ class HorarioService:
                 dia_semana=dia_semana,
                 ativo=True
             ).filter(
-                AgendaMedico.hora_inicio <= hora,
-                AgendaMedico.hora_fim >= fim
+                AgendaMedico.hora_inicio <= hora_consulta,
+                AgendaMedico.hora_fim >= fim_consulta
             ).first()
             
             if not horario:
@@ -62,7 +62,7 @@ class HorarioService:
                 medico_id=medico_id,
                 status='agendado'
             ).filter(
-                Agendamento.data_hora < data_hora + timedelta(minutes=duracao),
+                Agendamento.data_hora < data_hora + timedelta(minutes=duracao_minutos),
                 Agendamento.data_hora + timedelta(minutes=Agendamento.duracao) > data_hora
             ).first()
             
@@ -106,6 +106,7 @@ class HorarioService:
             ).filter(Agendamento.data_hora.between(inicio, fim)).all()
 
             disponiveis = []
+            hoje = datetime.now().date()
             for horario in horarios:
                 atual = datetime.combine(data, horario.horario_inicio)
                 limite = datetime.combine(data, horario.horario_fim)
