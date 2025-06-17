@@ -1,22 +1,19 @@
 from datetime import datetime, timedelta
 from ..models import Agendamento, Medico, Usuario
 from ..extensions import db
+from ..services.horario_service import HorarioService
 
 class AgendamentoService:
     @staticmethod
     def criar_agendamento(paciente_id, medico_id, data_hora, observacoes=None):
-        # verificar conflitos de horario
-        fim_consulta = data_hora + timedelta(minutes=30)
-
-        conflito = Agendamento.query.filter(
-            Agendamento.medico_id == medico_id,
-            Agendamento.data_hora < fim_consulta,
-            Agendamento.data_hora + timedelta(minutes=Agendamento.duracao) > data_hora,
-            Agendamento.status == 'agendado'
-        ).first()
-
-        if conflito:
-            return None, {'erro': 'Já existe outro agendamento nesse horario'}, 409
+        
+        disponivel, mensagem = HorarioService.verificar_disponibilidade(
+            medico_id=medico_id,
+            data_hora=data_hora
+        )
+    
+        if not disponivel:
+            return None, {'erro': mensagem}, 400
         
         agendamento = Agendamento(
             paciente_id=paciente_id,
