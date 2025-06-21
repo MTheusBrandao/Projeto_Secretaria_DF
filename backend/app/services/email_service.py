@@ -1,5 +1,6 @@
 from flask_mail import Message
 from ..extensions import mail
+from ..models.usuario import Usuario
 
 class EmailService:
     @staticmethod
@@ -25,4 +26,4 @@ class EmailService:
 
             Best regards,
             Saúde DF Team"""
-        return EmailService.enviar_email(user.email, subject, body)
+        return EmailService.enviar_email(usuario.email, subject, body)
