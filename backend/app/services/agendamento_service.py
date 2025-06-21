@@ -3,7 +3,7 @@ from ..models import Agendamento
 from ..extensions import db
 from ..services.horario_service import HorarioService
 
-class AgendamentoService:
+class ServicoAgendamento:
     @staticmethod
     def criar_agendamento(paciente_id, medico_id, data_hora, observacoes=None):
         

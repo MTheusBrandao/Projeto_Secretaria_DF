@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from ..services.agendamento_service import AgendamentoService
+from ..services.agendamento_service import ServicoAgendamento
 from datetime import datetime
 
 bp = Blueprint('agendamentos', __name__, url_prefix='/api/agendamentos')
@@ -16,7 +16,7 @@ def criar():
     except ValueError:
         return jsonify({'erro': 'Formato de data/hora invalido'}), 400
     
-    agendamento, erro = AgendamentoService.criar_agendamento(
+    agendamento, erro = ServicoAgendamento.criar_agendamento(
         paciente_id=usuario_id,
         medico_id=dados['medico_id'],
         data_hora=data_hora,
@@ -34,7 +34,7 @@ def listar():
     usuario_id = get_jwt_identity()
     medico_id = request.args.get('medico_id')
 
-    agendamentos = AgendamentoService.listar_agendamentos(
+    agendamentos = ServicoAgendamento.listar_agendamentos(
         medico_id=medico_id,
         paciente_id=usuario_id
     )
@@ -45,7 +45,7 @@ def listar():
 @jwt_required()
 def cancelar(agendamento_id):
     usuario_id = get_jwt_identity()
-    agendamento, erro = AgendamentoService.cancelar_agendamento(agendamento_id, usuario_id)
+    agendamento, erro = ServicoAgendamento.cancelar_agendamento(agendamento_id, usuario_id)
 
     if erro:
         return jsonify(erro), erro.get('status_code', 400)

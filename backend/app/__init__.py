@@ -2,6 +2,8 @@ from flask import Flask
 from .config import Config
 from .extensions import db, jwt, migrate
 from dotenv import load_dotenv
+from sqlalchemy import text
+
 
 load_dotenv()
 
@@ -17,7 +19,7 @@ def criar_aplicacao(config_class=Config):
     # Testar conexão com o banco de dados
     with app.app_context():
         try:
-            db.session.execute("SELECT 1")
+            db.session.execute(text("SELECT 1"))
             print("Conexão com o banco de dados bem-sucedida!")
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
