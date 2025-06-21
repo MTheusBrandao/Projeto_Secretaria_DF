@@ -12,6 +12,10 @@ class Medico(db.Model):
     
     agendamento = db.relationship('Agendamento', back_populates='medico', lazy=True)
     agendas = db.relationship('AgendaMedico', back_populates='medico', lazy=True)
+    especialidade = db.relationship('Especialidade', back_populates='medicos')
+    regiao_administrativa = db.relationship('RegiaoAdministrativa', back_populates='medicos')
+
+
 
     def __repr__(self):
         return f'<Medico {self.nome}>'

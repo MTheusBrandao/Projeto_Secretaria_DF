@@ -12,5 +12,8 @@ class AgendaMedico(db.Model):
     duracao_consulta = db.Column(db.Integer, default=30)
     ativo = db.Column(db.Boolean, default=True)
 
+    medico = db.relationship('Medico', back_populates='agendas')
+
+
     def __repr__(self):
         return f'<AgendaMedico {self.medico_id} - Day {self.dia_semana}>'

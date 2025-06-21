@@ -13,6 +13,9 @@ class Agendamento(db.Model):
     observacoes = db.Column(db.Text, nullable=True)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
+    paciente = db.relationship('Usuario', back_populates='agendamentos')
+    medico = db.relationship('Medico', back_populates='agendamento')
+
     # LGPD
     consentimento = db.Column(db.Boolean, default=False)
     finalidade_dados = db.Column(db.String(200), default='Agendamento de consulta médica')
