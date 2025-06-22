@@ -28,12 +28,14 @@ def criar_aplicacao(config_class=Config):
     from .routes.medico_routes import bp as medico_bp
     from .routes.agendamento_routes import bp as agendamento_bp
     from .routes.horario_routes import bp as horario_bp
+    from .routes.administracao_routes import bp as adm_bp
 
 
     app.register_blueprint(autenticacao_bp)
     app.register_blueprint(medico_bp)
     app.register_blueprint(agendamento_bp)
     app.register_blueprint(horario_bp)
+    app.register_blueprint(adm_bp)
 
 
     return app

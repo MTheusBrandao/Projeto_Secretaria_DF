@@ -22,9 +22,9 @@ class AdministracaoService:
         return [
             {
                 'id': esp.id,
-                'nome': esp.name,
-                'codigo': esp.code,
-                'descricao': esp.description
+                'nome': esp.nome,
+                'codigo': esp.codigo,
+                'descricao': esp.descricao
             }
             for esp in especialidades
         ]
@@ -32,16 +32,23 @@ class AdministracaoService:
     @staticmethod
     def cadastrar_especialidade(dados):
         try:
+            print("Iniciando cadastro de especialidade")  # Log de depuração
+        
             nova = Especialidade(
-                name=dados['nome'],
-                code=dados.get('codigo'),
-                description=dados.get('descricao'),
-                is_active=True
+                nome=dados['nome'],
+                codigo=dados.get('codigo'),
+                descricao=dados.get('descricao'),
+                ativo=True
             )
+            
             db.session.add(nova)
             db.session.commit()
+            
+            print("Especialidade cadastrada com sucesso")  # Log de depuração
             return nova, None
+            
         except Exception as e:
+            print(f"Erro no cadastro: {str(e)}")  # Log de depuração
             return None, {'erro': str(e)}
 
     @staticmethod
@@ -50,9 +57,9 @@ class AdministracaoService:
         if not esp or not esp.is_active:
             return None, {'erro': 'Especialidade não encontrada', 'status_code': 404}
         try:
-            esp.name = dados.get('nome', esp.name)
-            esp.code = dados.get('codigo', esp.code)
-            esp.description = dados.get('descricao', esp.description)
+            esp.nome = dados.get('nome', esp.nome)
+            esp.codigo = dados.get('codigo', esp.codigo)
+            esp.descricao = dados.get('descricao', esp.descricao)
             db.session.commit()
             return esp, None
         except Exception as e:

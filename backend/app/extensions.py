@@ -20,3 +20,4 @@ def test_db_connection():
         db.session.rollback()  
         print(f"❌ Erro na conexão com o banco: {str(e)}")
         return False
+    

@@ -31,9 +31,9 @@ def cadastrar_especialidade():
         return jsonify(erro), 400
     return jsonify({
         'id': especialidade.id,
-        'nome': especialidade.name,
-        'codigo': especialidade.code,
-        'descricao': especialidade.description
+        'nome': especialidade.nome,
+        'codigo': especialidade.codigo,
+        'descricao': especialidade.descricao
     }), 201
 
 @bp.route('/specialties/<int:especialidade_id>', methods=['PUT'])
@@ -46,7 +46,7 @@ def atualizar_especialidade(especialidade_id):
         return jsonify(erro), erro.get('status_code', 400)
     return jsonify({
         'id': especialidade.id,
-        'nome': especialidade.name,
-        'codigo': especialidade.code,
-        'descricao': especialidade.description
+        'nome': especialidade.nome,
+        'codigo': especialidade.codigo,
+        'descricao': especialidade.descricao
     }), 200

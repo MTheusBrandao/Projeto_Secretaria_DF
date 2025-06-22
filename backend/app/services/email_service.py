@@ -5,16 +5,22 @@ from ..models.usuario import Usuario
 class EmailService:
     @staticmethod
     def enviar_email(to, subject, body):
+        
+        print(f"Tentativa de enviar email para: {to}")  # Log para depuração
+        print(f"Assunto: {subject}")
+        print(f"Corpo: {body[:50]}...")  # Mostra apenas parte do corpo
+
         try:
             msg = Message(
-                subject=subject,
+                subject="Assunto fixo temporário",
                 recipients=[to],
-                body=body
+                body="Corpo fixo temporário"
             )
+
             mail.send(msg)
             return True
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            print(f"ERRO ao enviar email: {str(e)}")
             return False
         
     @staticmethod
