@@ -19,3 +19,13 @@ class Medico(db.Model):
 
     def __repr__(self):
         return f'<Medico {self.nome}>'
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "crm": self.crm,
+            "especialidade_id": self.especialidade_id,
+            "regiao_administrativa_id": self.regiao_administrativa_id,
+            "ativo": self.ativo
+        }

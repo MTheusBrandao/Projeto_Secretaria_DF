@@ -13,3 +13,11 @@ class Especialidade(db.Model):
 
     def __repr__(self):
         return f'<Especialidade {self.nome}>'
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "codigo": self.codigo,
+            "descricao": self.descricao
+        }

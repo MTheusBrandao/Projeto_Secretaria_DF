@@ -8,9 +8,9 @@ def registrar():
     dados = request.get_json()
     usuario, erro, status = AutenticacaoService.registrar_usuario(dados)
 
-    if erro:
-        return jsonify(erro), status
-    
+    if not usuario:
+        return jsonify(erro or {'erro': 'Erro interno'}), status or 400
+
     return jsonify({
         'mensagem': 'Usuário registrado com sucesso',
         'usuario': {

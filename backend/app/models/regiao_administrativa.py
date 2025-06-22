@@ -14,3 +14,13 @@ class RegiaoAdministrativa(db.Model):
 
     def __repr__(self):
         return f'<Regiao Administrativa {self.nome}>'
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "codigo": self.codigo,
+            "endereco": self.endereco,
+            "telefone": self.telefone,
+            "ativo": self.ativo
+        }

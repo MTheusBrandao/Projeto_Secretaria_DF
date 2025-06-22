@@ -3,6 +3,36 @@ from ..extensions import db
 
 class AdministracaoService:
     @staticmethod
+    def criar_regioes_administrativas_padrao():
+        regioes = [
+            {'nome': 'Plano Piloto', 'codigo': 'RA-I', 'endereco': 'Asa Norte - DF', 'telefone': '6133210001'},
+            {'nome': 'Taguatinga', 'codigo': 'RA-III', 'endereco': 'Taguatinga Centro - DF', 'telefone': '6133210002'},
+            {'nome': 'Ceilândia', 'codigo': 'RA-IX', 'endereco': 'Ceilândia Sul - DF', 'telefone': '6133210003'},
+            {'nome': 'Samambaia', 'codigo': 'RA-XII', 'endereco': 'Samambaia Norte - DF', 'telefone': '6133210004'},
+            {'nome': 'Gama', 'codigo': 'RA-II', 'endereco': 'Setor Central - DF', 'telefone': '6133210005'},
+        ]
+
+        inseridos = 0
+        for regiao in regioes:
+            existe = RegiaoAdministrativa.query.filter_by(codigo=regiao['codigo']).first()
+            if not existe:
+                nova = RegiaoAdministrativa(
+                    nome=regiao['nome'],
+                    codigo=regiao['codigo'],
+                    endereco=regiao['endereco'],
+                    telefone=regiao['telefone'],
+                    ativo=True
+                )
+                db.session.add(nova)
+                inseridos += 1
+
+        if inseridos > 0:
+            db.session.commit()
+            return {'mensagem': f'{inseridos} regiões administrativas cadastradas.'}, 201
+        else:
+            return {'mensagem': 'Regiões já estavam cadastradas.'}, 200
+        
+    @staticmethod
     def listar_regioes_administrativas():
         ras = RegiaoAdministrativa.query.filter_by(is_active=True).all()
         return [

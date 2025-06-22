@@ -17,3 +17,12 @@ class AgendaMedico(db.Model):
 
     def __repr__(self):
         return f'<AgendaMedico {self.medico_id} - Day {self.dia_semana}>'
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "medico_id": self.medico_id,
+            "dia_semana": self.dia_semana,
+            "hora_inicio": str(self.hora_inicio),
+            "hora_fim": str(self.hora_fim)
+        }

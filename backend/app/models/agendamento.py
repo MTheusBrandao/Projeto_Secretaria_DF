@@ -22,3 +22,12 @@ class Agendamento(db.Model):
 
     def __repr__(self):
         return f'<Appointment {self.id} - {self.data_hora}>'
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "paciente_id": self.paciente_id,
+            "medico_id": self.medico_id,
+            "data_hora": self.data_hora.isoformat(),
+            "status": self.status
+        }

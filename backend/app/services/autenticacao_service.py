@@ -9,11 +9,11 @@ class AutenticacaoService:
         campos_obrigatorios = ['email', 'senha', 'nome', 'cpf', 'telefone']
         for campo in campos_obrigatorios:
             if not dados.get(campo):
-                return None, {'erro': f'{campo} é obrigatorio'}, 400
+                return {'erro': f'{campo} é obrigatorio'}, 400
         
         # Verificação de usuario existente
         if Usuario.query.filter_by(email=dados['email']).first():
-            return None, {'erro': 'Email já cadastrado'}, 400
+            return {'erro': 'Email já cadastrado'}, 400
         
         # criar usuario
         usuario = Usuario(
@@ -21,14 +21,16 @@ class AutenticacaoService:
             nome=dados['nome'],
             cpf=dados['cpf'],
             telefone=dados['telefone'],
-            endereco=dados.get('endereco', '')
         )
         usuario.set_senha(dados['senha'])
 
         db.session.add(usuario)
         db.session.commit()
 
-        return usuario, None, None
+        return {
+            'mensagem': 'Usuário registrado com sucesso',
+            'usuario': usuario.to_dict()
+        }, 201
     
     @staticmethod
     def login(email, senha):

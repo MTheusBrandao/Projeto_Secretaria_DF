@@ -24,18 +24,19 @@ def criar_aplicacao(config_class=Config):
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
-    from .routes.autenticacao_routes import bp as autenticacao_bp
+    from .routes.autenticacao_routes import bp as auth_bp
     from .routes.medico_routes import bp as medico_bp
     from .routes.agendamento_routes import bp as agendamento_bp
     from .routes.horario_routes import bp as horario_bp
-    from .routes.administracao_routes import bp as adm_bp
+    from .routes.administracao_routes import bp as admin_bp
 
 
-    app.register_blueprint(autenticacao_bp)
-    app.register_blueprint(medico_bp)
-    app.register_blueprint(agendamento_bp)
-    app.register_blueprint(horario_bp)
-    app.register_blueprint(adm_bp)
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
+    app.register_blueprint(admin_bp, url_prefix="/api/admin")
+    app.register_blueprint(medico_bp, url_prefix="/api/medicos")
+    app.register_blueprint(agendamento_bp, url_prefix="/api/agendamentos")
+    app.register_blueprint(horario_bp, url_prefix="/api/horarios")
+
 
 
     return app
