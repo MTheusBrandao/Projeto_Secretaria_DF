@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secretaria de Saúde - Login Médico</title>
+  <link rel="website icon" href="../Imagens/GDF.jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <a href="index.html">
+        <img src="../Imagens/Logo.png" alt="Secretaria de Saúde" style="height:130px">
+      </a>
+    </div>
+
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Digite seu e-mail de login:" required>
+      <input type="password" id="senha" placeholder="Digite sua senha:" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <a class="link" href="medicos-cadastrar.html">Quero me cadastrar</a>
+    <div id="errorMessage" style="color: red; display: none; margin-top: 15px;"></div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value.trim();
+      const errorElement = document.getElementById('errorMessage');
+
+      if (!email || !senha) {
+        errorElement.textContent = 'Por favor, preencha todos os campos.';
+        errorElement.style.display = 'block';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            senha: senha
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.erro || 'Credenciais inválidas');
+        }
+
+        localStorage.setItem('authToken', data.access_token);
+        localStorage.setItem('userType', 'medico');
+        localStorage.setItem('userData', JSON.stringify(data.usuario || {}));
+
+        window.location.href = 'consultaMedica.html';
+
+      } catch (error) {
+        errorElement.textContent = error.message;
+        errorElement.style.display = 'block';
+        console.error('Erro no login:', error);
+      }
+    });
+  </script>
+</body>
+</html>

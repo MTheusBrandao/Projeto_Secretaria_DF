@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="website icon" href="../Imagens/GDF.jpeg">
+  <title>Secretaria de Saúde - Agendamento de Consultas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      text-align: center;
+      padding: 30px;
+    }
+    header img {
+      height: 120px;
+      margin-bottom: 30px;
+    }
+    form {
+      display: inline-block;
+      text-align: left;
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    #mensagem {
+      margin-top: 20px;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html">
+      <img src="../Imagens/Logo.png" alt="Secretaria de Saúde - GDF">
+    </a>
+  </header>
+
+  <h2>Agendar Consulta</h2>
+
+  <form id="form-agendamento">
+    <label for="agenda_id">ID da Agenda:</label>
+    <input type="number" id="agenda_id" required>
+
+    <label for="data">Data da Consulta:</label>
+    <input type="date" id="data" required>
+
+    <label for="horario">Hora:</label>
+    <input type="time" id="horario" required>
+
+    <button type="submit">Agendar</button>
+  </form>
+
+  <div id="mensagem"></div>
+
+  <script>
+    // const form = document.getElementById('form-agendamento');
+    // const mensagem = document.getElementById('mensagem');
+
+    // form.addEventListener('submit', async function(e) {
+    //   e.preventDefault();
+
+    //   const token = localStorage.getItem('authToken');
+    //   if (!token) {
+    //     alert('Realize o login antes de agendar uma consulta.');
+    //     return;
+    //   }
+
+    //   const agenda_id = document.getElementById('agenda_id').value;
+    //   const data = document.getElementById('data').value;
+    //   const horario = document.getElementById('horario').value;
+
+    //   try {
+    //     const response = await fetch('http://127.0.0.1:5000/api/agendamentos', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': 'Bearer ' + token
+    //       },
+    //       body: JSON.stringify({ agenda_id, data, horario })
+    //     });
+
+    //     const result = await response.json();
+
+    //     if (!response.ok) {
+    //       mensagem.style.color = 'red';
+    //       mensagem.textContent = result.erro || 'Erro ao agendar consulta';
+    //     } else {
+    //       mensagem.style.color = 'green';
+    //       mensagem.textContent = 'Consulta agendada com sucesso!';
+    //     }
+    //   } catch (error) {
+    //     mensagem.style.color = 'red';
+    //     mensagem.textContent = 'Erro na requisição: ' + error.message;
+    //   }
+    // });
+  const form = document.getElementById('form-agendamento');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Consulta agendada!');
+  });
+  </script>
+
+</body>
+</html>

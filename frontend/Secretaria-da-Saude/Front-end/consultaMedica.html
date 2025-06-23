@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secretaria de Saúde - Consultas Agendadas</title>
+  <link rel="website icon" href="../Imagens/GDF.jpeg">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      background-color: #fff;
+      padding: 20px 16px;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    .notificacao {
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .texto .nome {
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 4px;
+    }
+
+    .texto .mensagem {
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <a href="index.html">
+        <img src="../Imagens/Logo.png" alt="Secretaria de Saúde" class="logo">
+      </a>
+    </div>
+
+    <h2>Consultas agendadas</h2>
+
+    <div id="lista-notificacoes"></div>
+  </div>
+
+  <script>
+    async function carregarAgendamentos() {
+      const token = localStorage.getItem('authToken');
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+      if (!token || userData.tipo !== 'medico') {
+        alert('Você precisa estar logado como médico.');
+        window.location.href = 'LoginMedico.html';
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/agendamentos?medico_id=${userData.id}`, {
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        });
+
+        const agendamentos = await response.json();
+        const container = document.getElementById('lista-notificacoes');
+
+        if (!Array.isArray(agendamentos)) {
+          container.innerHTML = '<p>Erro ao carregar agendamentos.</p>';
+          return;
+        }
+
+        agendamentos.forEach(a => {
+          const div = document.createElement('div');
+          div.className = 'notificacao';
+          div.innerHTML = `
+            <div class="texto">
+              <span class="nome">Paciente #${a.paciente_id}</span>
+              <span class="mensagem">Consulta marcada para ${a.data} às ${a.horario}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (e) {
+        console.error('Erro ao buscar agendamentos:', e);
+        document.getElementById('lista-notificacoes').innerHTML = '<p>Falha na comunicação com o servidor.</p>';
+      }
+    }
+
+    carregarAgendamentos();
+  </script>
+</body>
+</html>

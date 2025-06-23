@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secretaria de Saúde - Cadastro</title>
+  <link rel="website icon" href="../Imagens/GDF.jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <a href="./index.html">
+        <img src="../Imagens/Logo.png" alt="Secretaria de Saúde" style="height:130px">
+      </a>
+    </div>
+
+    <form id="cadastroForm">
+      <label>E-mail:</label>
+      <input id="email" type="email" required>
+
+      <label>Nome completo:</label>
+      <input id="nome" type="text" required>
+
+      <label>Senha:</label>
+      <input id="senha" type="password" minlength="6" required>
+
+      <label>CPF:</label>
+      <input id="cpf" type="text" required>
+
+      <label>Telefone:</label>
+      <input id="telefone" type="text" required>
+
+      <label>Endereço:</label>
+      <input id="endereco" type="text">
+
+      <button type="submit">Cadastrar</button>
+      <div id="errorMessage" style="color: red; display: none; margin-top: 15px;"></div>
+    </form>
+
+    <a class="link" href="./LoginPaciente.html">Já sou cadastrado</a>
+  </div>
+
+  <script>
+    document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = {
+        email: document.getElementById('email').value.trim(),
+        nome: document.getElementById('nome').value.trim(),
+        senha: document.getElementById('senha').value.trim(),
+        cpf: document.getElementById('cpf').value.trim().replace(/\D/g, ''),
+        telefone: document.getElementById('telefone').value.trim().replace(/\D/g, ''),
+        endereco: document.getElementById('endereco').value.trim(),
+        tipo: 'paciente'
+      };
+
+      const errorElement = document.getElementById('errorMessage');
+      const button = document.querySelector('button[type="submit"]');
+
+      if (Object.values(formData).some(field => !field)) {
+        errorElement.textContent = 'Por favor, preencha todos os campos obrigatórios.';
+        errorElement.style.display = 'block';
+        return;
+      }
+
+      if (formData.senha.length < 6) {
+        errorElement.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+        errorElement.style.display = 'block';
+        return;
+      }
+
+      if (formData.cpf.length !== 11) {
+        errorElement.textContent = 'CPF inválido. Deve conter 11 dígitos.';
+        errorElement.style.display = 'block';
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Cadastrando...';
+      errorElement.style.display = 'none';
+
+      try {
+        const response = await fetch('http://localhost:5000/api/auth/registro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.erro || 'Erro ao cadastrar usuário');
+        }
+
+        const loginResponse = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            senha: formData.senha
+          })
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (!loginResponse.ok) {
+          window.location.href = './LoginPaciente.html';
+          return;
+        }
+
+        localStorage.setItem('authToken', loginData.access_token);
+        localStorage.setItem('userType', 'paciente');
+        localStorage.setItem('userData', JSON.stringify(loginData.usuario));
+
+        window.location.href = 'agendamento.html';
+
+      } catch (error) {
+        errorElement.textContent = error.message;
+        errorElement.style.display = 'block';
+        console.error('Erro no cadastro:', error);
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Cadastrar';
+      }
+    });
+  </script>
+</body>
+</html>
