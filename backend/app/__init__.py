@@ -3,12 +3,15 @@ from .config import Config
 from .extensions import db, jwt, migrate
 from dotenv import load_dotenv
 from sqlalchemy import text
+from flask_cors import CORS
+
 
 
 load_dotenv()
 
 def criar_aplicacao(config_class=Config):
     app = Flask(__name__)
+    CORS(app, supports_credentials=True)
     app.config.from_object(config_class)
 
     # inicializar as extensoes:

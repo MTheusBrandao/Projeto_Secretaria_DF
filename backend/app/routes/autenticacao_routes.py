@@ -3,29 +3,25 @@ from ..services.autenticacao_service import AutenticacaoService
 
 bp = Blueprint('autenticacao', __name__, url_prefix='/api/auth')
 
-@bp.route('/registrar', methods=['POST'])
+@bp.route('/registro', methods=['POST'])
 def registrar():
     dados = request.get_json()
-    usuario, erro, status = AutenticacaoService.registrar_usuario(dados)
 
-    if not usuario:
-        return jsonify(erro or {'erro': 'Erro interno'}), status or 400
+    resultado, erro = AutenticacaoService.registrar_usuario(dados)
+    
+    if erro:
+        return jsonify(erro), erro[1] if isinstance(erro, tuple) else 400
 
-    return jsonify({
-        'mensagem': 'Usuário registrado com sucesso',
-        'usuario': {
-            'id': usuario.id,
-            'nome': usuario.nome,
-            'email': usuario.email
-        }
-    }), 201
+    return jsonify(resultado), 201
+
 
 @bp.route('/login', methods=['POST'])
 def login():
     dados = request.get_json()
-    resultado, erro = AutenticacaoService.login(dados.get('email'), dados.get('senha'))
+
+    resultado, erro = AutenticacaoService.login(dados)
     
     if erro:
-        return jsonify(erro), 401
-    
+        return jsonify(erro), erro[1] if isinstance(erro, tuple) else 401
+
     return jsonify(resultado), 200

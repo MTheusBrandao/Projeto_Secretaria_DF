@@ -1,33 +1,35 @@
-from datetime import datetime
 from ..extensions import db
+from datetime import datetime, time
 
 class Agendamento(db.Model):
     __tablename__ = 'agendamentos'
 
     id = db.Column(db.Integer, primary_key=True)
+    
+    # Chaves estrangeiras necessárias
     paciente_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     medico_id = db.Column(db.Integer, db.ForeignKey('medicos.id'), nullable=False)
-    data_hora = db.Column(db.DateTime, nullable=False)
-    duracao = db.Column(db.Integer, default=30)  # em minutos
-    status = db.Column(db.String(20), default='agendado')  # agendado, cancelado, realizado
-    observacoes = db.Column(db.Text, nullable=True)
+    agenda_id = db.Column(db.Integer, db.ForeignKey('agendas_medicos.id'), nullable=False)
+
+    data = db.Column(db.Date, nullable=False)
+    horario = db.Column(db.Time, nullable=False)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relacionamentos
     paciente = db.relationship('Usuario', back_populates='agendamentos')
-    medico = db.relationship('Medico', back_populates='agendamento')
-
-    # LGPD
-    consentimento = db.Column(db.Boolean, default=False)
-    finalidade_dados = db.Column(db.String(200), default='Agendamento de consulta médica')
+    medico = db.relationship('Medico', back_populates='agendamentos')
+    agenda = db.relationship('AgendaMedico', back_populates='agendamentos')
 
     def __repr__(self):
-        return f'<Appointment {self.id} - {self.data_hora}>'
-    
+        return f'<Agendamento {self.id}>'
+
     def to_dict(self):
         return {
             "id": self.id,
             "paciente_id": self.paciente_id,
             "medico_id": self.medico_id,
-            "data_hora": self.data_hora.isoformat(),
-            "status": self.status
+            "agenda_id": self.agenda_id,
+            "data": self.data.isoformat(),
+            "horario": self.horario.strftime('%H:%M:%S'),
+            "criado_em": self.criado_em.isoformat()
         }

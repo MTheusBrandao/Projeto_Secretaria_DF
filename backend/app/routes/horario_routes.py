@@ -5,19 +5,15 @@ from ..services.horario_service import HorarioService
 bp = Blueprint('horarios', __name__, url_prefix='/api/horarios')
 
 @bp.route('/', methods=['POST'])
-@jwt_required()
+# @jwt_required()
 def cadastrar_horario():
     dados = request.get_json()
-    horario, erro = HorarioService.cadastrar_horario(
-        medico_id=dados['medico_id'],
-        dia_semana=dados['dia_semana'],
-        hora_inicio=dados['hora_inicio'],
-        hora_fim=dados['hora_fim']
-    )
+    horario, erro = HorarioService.cadastrar_horario(dados)
     
     if erro:
-        return jsonify(erro), erro.get('status_code', 400)
-        
+        mensagem, status = erro
+        return jsonify(mensagem), status
+    
     return jsonify(horario.to_dict()), 201
 
 @bp.route('/medico/<int:medico_id>', methods=['GET'])

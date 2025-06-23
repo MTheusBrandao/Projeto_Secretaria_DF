@@ -12,15 +12,29 @@ class MedicoService:
         return query.all(), None, 200
     
     @staticmethod
+    def listar_todos():
+        medicos = Medico.query.filter_by(ativo=True).all()
+        return [medico.to_dict() for medico in medicos]
+    
+    @staticmethod
     def cadastrar_medico(dados):
-        medico=Medico(
-            nome=dados['nome'],
-            crm=dados['crm'],
-            especialidade_id=dados.get('especialidade_id')
-        )
+        if Medico.query.filter_by(crm=dados['crm']).first():
+            return None, {'erro': 'Já existe um médico com esse CRM'}, 400
 
-        db.session.add(medico)
-        db.session.commit()
+        try:
+            medico = Medico(
+                nome=dados['nome'],
+                crm=dados['crm'],
+                especialidade_id=dados['especialidade_id'],
+                regiao_administrativa_id=dados['regiao_administrativa_id']
+            )
+            db.session.add(medico)
+            db.session.commit()
+            return medico, None, 201
+
+        except Exception as e:
+            db.session.rollback()
+            return None, {'erro': str(e)}, 500
 
     @staticmethod
     def atualizar_medico(medico_id, dados):

@@ -11,22 +11,19 @@ def criar():
     dados = request.get_json()
     usuario_id = get_jwt_identity()
 
-    try:
-        data_hora = datetime.fromisoformat(dados['data_hora'])
-    except ValueError:
-        return jsonify({'erro': 'Formato de data/hora invalido'}), 400
-    
-    agendamento, erro = ServicoAgendamento.criar_agendamento(
-        paciente_id=usuario_id,
-        medico_id=dados['medico_id'],
-        data_hora=data_hora,
-        observacoes=dados.get('observacoes')
-    )
+    agenda_id = dados.get('agenda_id')
+    data = dados.get('data')
+    horario = dados.get('horario')
 
+    if not all([agenda_id, data, horario]):
+        return jsonify({'erro': 'Campos obrigatórios faltando'}), 400
+
+    agendamento, erro, status = ServicoAgendamento.criar_agendamento(
+    usuario_id, agenda_id, data, horario
+)
     if erro:
-        return jsonify(erro), erro.get('status_code', 400)
-    
-    return jsonify(agendamento.to_dict()), 201
+        return jsonify(erro), status
+    return jsonify(agendamento), status
     
 @bp.route('/', methods=['GET'])
 @jwt_required()
@@ -45,9 +42,9 @@ def listar():
 @jwt_required()
 def cancelar(agendamento_id):
     usuario_id = get_jwt_identity()
-    agendamento, erro = ServicoAgendamento.cancelar_agendamento(agendamento_id, usuario_id)
-
-    if erro:
-        return jsonify(erro), erro.get('status_code', 400)
+    agendamento, erro, status = ServicoAgendamento.cancelar_agendamento(agendamento_id, usuario_id)
     
-    return jsonify(agendamento.to_dict()), 200
+    if erro:
+        return jsonify(erro), status
+    
+    return jsonify({'mensagem': 'Agendamento cancelado com sucesso'}), status

@@ -4,27 +4,28 @@ from ..extensions import db
 
 class HorarioService:
     @staticmethod
-    def cadastrar_horario(medico_id, dia_semana, hora_inicio, hora_fim):
-        if not Medico.query.get(medico_id):
-            return None, {'erro': 'Medico não encontrado'}, 404
-        
+    def cadastrar_horario(dados):
+        medico = Medico.query.get(dados.get('medico_id'))
+
+        if not medico:
+            return None, ({"erro": "Médico não encontrado"}, 404)
+
         try:
-            hora_inicio = time.fromisoformat(hora_inicio) if isinstance(hora_inicio, str) else hora_inicio
-            hora_fim = time.fromisoformat(hora_fim) if isinstance(hora_fim, str) else hora_fim
-        except ValueError:
-            return None, {'erro': 'Formato de hora invalido'}, 404
+            horario = AgendaMedico(
+                medico_id=dados['medico_id'],
+                data=dados['data'],
+                hora_inicio=dados['hora_inicio'],
+                hora_fim=dados['hora_fim']
+            )
 
-        horario = AgendaMedico(
-            medico_id=medico_id,
-            dia_semana=dia_semana,
-            hora_inicio=hora_inicio,
-            hora_fim=hora_fim
-        )
+            db.session.add(horario)
+            db.session.commit()
 
-        db.session.add(horario)
-        db.session.commit()
-        
-        return horario, None
+            return horario, None
+
+        except Exception as e:
+            db.session.rollback()
+            return None, ({"erro": str(e)}, 500)
     
     @staticmethod
     def listar_horarios(medico_id, apenas_ativos=True):
@@ -33,7 +34,7 @@ class HorarioService:
         if apenas_ativos:
             query = query.filter_by(ativo=True)
 
-        return query.order_by(AgendaMedico.dia_semana, AgendaMedico.hora_inicio).all()
+        return query.order_by(AgendaMedico.data, AgendaMedico.hora_inicio).all()
     
     @staticmethod
     def verificar_disponibilidade(medico_id, data_hora, duracao_minutos=30):
@@ -42,13 +43,13 @@ class HorarioService:
             if isinstance(data_hora, str):
                 data_hora = datetime.fromisoformat(data_hora)
                 
-            dia_semana = data_hora.weekday()
+            data = data_hora.weekday()
             hora_consulta = data_hora.time()
             fim_consulta = (data_hora + timedelta(minutes=duracao_minutos)).time()
             
             horario = AgendaMedico.query.filter_by(
                 medico_id=medico_id,
-                dia_semana=dia_semana,
+                data=data,
                 ativo=True
             ).filter(
                 AgendaMedico.hora_inicio <= hora_consulta,
@@ -85,12 +86,12 @@ class HorarioService:
             if isinstance(data, str):
                 data = datetime.strptime(data, '%Y-%m-%d').date()
                 
-            dia_semana = data.weekday()
+            data = data.weekday()
             data_atual = datetime.now().date()
             
             horarios = AgendaMedico.query.filter_by(
                 medico_id=medico_id,
-                dia_semana=dia_semana,
+                data=data,
                 ativo=True
             ).order_by(AgendaMedico.horario_inicio).all()
             

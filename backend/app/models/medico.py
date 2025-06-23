@@ -10,7 +10,7 @@ class Medico(db.Model):
     regiao_administrativa_id = db.Column(db.Integer, db.ForeignKey('regioes_administrativas.id'), nullable=False)
     ativo = db.Column(db.Boolean, default=True)
     
-    agendamento = db.relationship('Agendamento', back_populates='medico', lazy=True)
+    agendamentos = db.relationship('Agendamento', back_populates='medico', lazy=True)
     agendas = db.relationship('AgendaMedico', back_populates='medico', lazy=True)
     especialidade = db.relationship('Especialidade', back_populates='medicos')
     regiao_administrativa = db.relationship('RegiaoAdministrativa', back_populates='medicos')
