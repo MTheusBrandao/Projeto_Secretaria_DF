@@ -93,7 +93,7 @@ class HorarioService:
                 medico_id=medico_id,
                 data=data,
                 ativo=True
-            ).order_by(AgendaMedico.horario_inicio).all()
+            ).order_by(AgendaMedico.hora_inicio).all()
             
             if not horarios:
                 return []
